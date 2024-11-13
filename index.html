@@ -7,25 +7,10 @@
 </head>
 <body>
     <h1>Video Downloader</h1>
-    <form id="download-form">
+    <form action="/download" method="post">
         <label for="url">Video URL:</label>
         <input type="text" id="url" name="url" required>
-        <button type="submit">Download</button>
+        <button>Download</button>
     </form>
-    <script>
-        document.getElementById('download-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const url = document.getElementById('url').value;
-            const response = await fetch('http://localhost:10000/download', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ url })
-            });
-            const result = await response.text();
-            alert(result);
-        });
-    </script>
 </body>
 </html>
