@@ -16,7 +16,8 @@ app.post('/download', (req, res) => {
         return res.status(400).send('URL is required');
     }
 
-    const ytdlpPath = path.resolve(__dirname, 'yt-dlp.exe');// Ensure yt-dlp is installed and accessible in your PATH
+    const ytdlpPath = '/opt/render/project/src/yt-dlp'; // Use the correct path to yt-dlp (without .exe for Unix-based systems)
+// Ensure yt-dlp is installed and accessible in your PATH
     const command = `${ytdlpPath} -g --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36" ${url}`; // -g option to get the direct download link
 
     exec(command, async (error, stdout, stderr) => {
