@@ -2,13 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 const port = 3000;
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 
-app.post('/download', (req, res) => {
+app.post('/download',async (req, res) => {
     const { url } = req.body;
     if (!url) {
         return res.status(400).send('URL is required');
@@ -25,7 +27,7 @@ app.post('/download', (req, res) => {
     const ytdlpPath = path.resolve(__dirname, 'yt-dlp.exe'); // Full path to yt-dlp
     const command = `"${ytdlpPath}" -o "${outputFile}" ${url}`;
 
-    exec(command, (error, stdout, stderr) => {
+    await exec(command, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error: ${error.message}`);
             return res.status(500).send('Error downloading video');
