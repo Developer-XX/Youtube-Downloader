@@ -2,41 +2,32 @@ const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
 const path = require('path');
-const fs = require('fs');
 const app = express();
 const port = 3000;
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true })); // To parse URL-encoded data
 
-app.post('/download',async (req, res) => {
+app.post('/download', (req, res) => {
     const { url } = req.body;
     if (!url) {
         return res.status(400).send('URL is required');
     }
 
-    const outputDir = 'downloads';
-    const outputFile = path.join(outputDir, '%(title)s.%(ext)s');
+    const ytdlpPath = 'yt-dlp'; // Ensure yt-dlp is installed and accessible in your PATH
+    const command = `${ytdlpPath} -g ${url}`; // -g option to get the direct download link
 
-    // Ensure output directory exists
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-    }
-
-    const ytdlpPath = path.resolve(__dirname, 'yt-dlp.exe'); // Full path to yt-dlp
-    const command = `"${ytdlpPath}" -o "${outputFile}" ${url}`;
-
-    await exec(command, (error, stdout, stderr) => {
+    exec(command, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error: ${error.message}`);
-            return res.status(500).send('Error downloading video');
+            return res.status(500).send('Error generating download link');
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
         }
-        console.log(`stdout: ${stdout}`);
-        res.send('Download started');
+        const downloadLink = stdout.trim();
+        res.send(`You can download the video from <a href="${downloadLink}" target="_blank">here</a>.`);
     });
 });
 
