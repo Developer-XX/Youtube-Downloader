@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>YouTube Video Downloader</h1>
+    <form id="urlForm">
+        <input type="text" id="videoUrl" placeholder="Enter YouTube URL" required>
+        <button type="submit">Get Formats</button>
+    </form>
+
+    <div id="formats">
+        <!-- Formats will be displayed here -->
+    </div>
+
+    <script>
+        $('#urlForm').on('submit', function(event) {
+            event.preventDefault();
+            
+            const videoUrl = $('#videoUrl').val();
+            
+            $.post('/get_formats', { url: videoUrl }, function(data) {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                const formatsDiv = $('#formats');
+                formatsDiv.empty();
+    
+                if (data.has_audio) {
+                    formatsDiv.append('<p>This video has audio.</p>');
+                } else {
+                    formatsDiv.append('<p>This video has no audio.</p>');
+                }
+    
+                data.formats.forEach(function(format) {
+                    formatsDiv.append(`
+                        <p>Format: ${format.resolution}, Audio: ${format.has_audio ? 'Yes' : 'No'}<br>
+                        <button class="downloadBtn" data-format-id="${format.format_id}">Download</button></p>
+                    `);
+                });
+    
+                // Add download functionality
+                $('.downloadBtn').on('click', function() {
+                    const formatId = $(this).data('format-id');
+                    
+                    // Step 1: Request a download link
+                    $.post('/create_link', { url: videoUrl, format_id: formatId }, function(downloadData) {
+                        if (downloadData.error) {
+                            alert(downloadData.error);
+                        } else {
+                            // Step 2: Redirect to download URL
+                            window.location.href = downloadData.download_url;
+                        }
+                    });
+                });
+            });
+        });
+    </script>    
+</body>
+</html>
