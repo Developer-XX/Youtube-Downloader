@@ -1,4 +1,4 @@
-Flask==2.0.2
-yt_dlp==2021.12.1
-requests==2.26.0
-gunicorn==20.1.0
+Flask
+yt_dlp
+requests
+gunicorn
