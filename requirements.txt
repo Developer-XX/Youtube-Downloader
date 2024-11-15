@@ -1,4 +1,4 @@
-Flask
-yt_dlp
-requests
-gunicorn
+Flask==3.1.0
+yt_dlp==2024.11.4
+requests==2.32.3
+gunicorn==23.0.0
